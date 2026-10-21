@@ -1,4 +1,4 @@
-name: Build Example Complete
+name: Docker Example
 
 on: workflow_dispatch
 
@@ -34,7 +34,18 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           coverage-file: ./coverage/clover.xml
-      - name: Pack app
-        run: zip -r calculator.zip . -x '.git/*' junit.xml 'coverage/*' # -r=recursief, . = alles. -x = sluit de volgende patronen uit. '.git/*' = alles in de map .git.
-      - name: verify
-        run: ls -lahR # a=verborgen files, h=human readable, R=incl submappen, -l=uitgebreide lijst
+
+      # Docker
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v4.6.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4.4.1
+      - name: Build and push
+        uses: docker/build-push-action@v7.4.0
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/calculator-app:latest
