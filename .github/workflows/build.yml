@@ -1,0 +1,19 @@
+name: Build Example
+
+on: workflow_dispatch
+
+jobs:
+  Setup-and-build-nodejs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+      - name: Install dependencies
+        run: npm install
+      - name: Pack the files
+        run: zip -r calculator.zip .
+      - name: Verify
+        run: ls -lahR
+      
