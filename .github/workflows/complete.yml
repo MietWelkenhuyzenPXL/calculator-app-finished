@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm ci            # Installeert exact de versies uit package-lock.json (reproduceerbaar). Faalt als dat bestand ontbreekt.
       - name: Run tests
-        run: npm test
+        run: npm test -- --coverage # eerste --: geeft wat volgt door aan het script (jest); --coverage: Jest: meet de coverage > maakt map coverage met o.a. clover.xml aan
       - name: JUnit Report Action
         uses: mikepenz/action-junit-report@v6.6.1
         if: always()           # Voert deze step ook uit als een vorige step faalt.
@@ -30,7 +30,11 @@ jobs:
           include_passed: true
       - name: Better Test Reports Action
         uses: mridang/action-test-reporter@v1.7.0
+        if: always()
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          coverage-file: ./coverage/clover.xml
       - name: Pack app
-        run: zip -r calculator.zip . -x '.git/*' junit.xml # -r=recursief, . = alles. -x = sluit de volgende patronen uit. '.git/*' = alles in de map .git.
+        run: zip -r calculator.zip . -x '.git/*' junit.xml 'coverage/*' # -r=recursief, . = alles. -x = sluit de volgende patronen uit. '.git/*' = alles in de map .git.
       - name: verify
         run: ls -lahR # a=verborgen files, h=human readable, R=incl submappen, -l=uitgebreide lijst
