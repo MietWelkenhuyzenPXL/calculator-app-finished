@@ -27,6 +27,7 @@ jobs:
         if: always()           # Voert deze step ook uit als een vorige step faalt.
         with:
           report_paths: ./junit.xml # Pad naar het bestand dat jest-junit maakt (standaard junit.xml in de hoofdmap): na te kijken in de documentatie of met een run.
+          include_passed: true
       - name: Pack app
         run: zip -r calculator.zip . -x '.git/*' junit.xml # -r=recursief, . = alles. -x = sluit de volgende patronen uit. '.git/*' = alles in de map .git.
       - name: verify
