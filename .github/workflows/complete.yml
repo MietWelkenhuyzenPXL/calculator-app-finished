@@ -28,6 +28,8 @@ jobs:
         with:
           report_paths: ./junit.xml # Pad naar het bestand dat jest-junit maakt (standaard junit.xml in de hoofdmap): na te kijken in de documentatie of met een run.
           include_passed: true
+      - name: Better Test Reports Action
+        uses: mridang/action-test-reporter@v1.7.0
       - name: Pack app
         run: zip -r calculator.zip . -x '.git/*' junit.xml # -r=recursief, . = alles. -x = sluit de volgende patronen uit. '.git/*' = alles in de map .git.
       - name: verify
