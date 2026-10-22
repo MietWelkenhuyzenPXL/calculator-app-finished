@@ -1,0 +1,52 @@
+name: CI Node.js
+
+on: 
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write  
+
+jobs:
+  checkout-test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+        
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7.1.0
+        with: 
+          node-version: '20.x'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run tests with coverage
+        run: npm test -- --coverage
+        
+      - name: Coverage report
+        if: always()  # ook als test faalt, want dan net interessant
+        uses: mridang/action-test-reporter@v1.7.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          coverage-file: ./coverage/clover.xml # Path to your clover, cobertura, jacoco, or lcov file
+          working-directory: ./
+          
+      - name: Upload test results
+        if: always()  # ook als test faalt, want dan net interessant
+        uses: actions/upload-artifact@v7.0.2  # kant en klare step van github zelf
+        with:                             # inputs voor de github action
+          name: test-results              # naam van het artifact - zo heet het onderaan je run-pagina, en test-results.zip als je het downloadt
+          # welke bestanden in het artifact gaan; na | volgt één pad per regel
+          # - junit.xml: testresultaten, aangemaakt door jest-junit bij npm test
+          # - coverage/: de hele coverage-map, inclusief submappen
+          path: |                         
+            junit.xml                     
+            coverage/                     
+          if-no-files-found: error  # step faalt als er niets gevonden wordt
+       
